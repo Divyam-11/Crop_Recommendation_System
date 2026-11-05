@@ -18,6 +18,36 @@ For Windows development, start `python app.py` in the repository root and `npm r
 
 The crop profile data is descriptive of this project's dataset and is not a fertilizer prescription. Carbon is displayed on the dataset's content scale because a consistent unit is not documented.
 
+## Command-line application
+
+The CLI trains its own model from a CSV, so it can use the linked Kaggle dataset directly. The Kaggle file uses `N`, `P`, `K`, `temperature`, `humidity`, `ph`, `rainfall`, and `label`; the CLI also accepts the descriptive column names in this repository's bundled CSV. No Flask server or frontend is needed for CLI use.
+
+1. Install Python dependencies from the repository root:
+
+   ```sh
+   python -m pip install -r requirements.txt
+   ```
+
+2. Download and extract the CSV from [the Kaggle dataset](https://www.kaggle.com/datasets/siddharthss/crop-recommendation-dataset?resource=download), then inspect it and train:
+
+   ```sh
+   python cli.py info --data path/to/Crop_recommendation.csv
+   python cli.py train --data path/to/Crop_recommendation.csv
+   ```
+
+   The trained pipeline is saved to `models/crop_model.joblib`. To train on the bundled repository dataset instead, omit `--data`.
+
+3. Predict interactively, or pass the features on the command line:
+
+   ```sh
+   python cli.py predict --interactive
+   python cli.py predict --values N=90 P=42 K=43 temperature=20.9 humidity=82 ph=6.5 rainfall=203
+   ```
+
+   For the bundled dataset, the model also includes its additional `Carbon` and `Soil` inputs, which must be supplied to `predict` (or enter them interactively).
+
+Run `python cli.py --help` or `python cli.py predict --help` for command options. The holdout accuracy printed by `train` is a split-based dataset metric; it does not guarantee field performance.
+
 This is a full-stack web application that recommends the best crop to grow based on environmental factors. It uses a machine learning model to provide accurate predictions, helping farmers make informed decisions for sustainable and productive agriculture.
 
 ## Features
