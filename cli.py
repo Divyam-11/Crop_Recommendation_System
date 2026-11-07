@@ -23,8 +23,8 @@ ROOT = Path(__file__).resolve().parent
 DEFAULT_DATA = ROOT / "crop_recommendation_dataset.csv"
 DEFAULT_MODEL = ROOT / "models" / "crop_model.joblib"
 
-# The linked Kaggle file uses N/P/K, temperature, humidity, ph, rainfall, label.
-# The repository's bundled extension uses descriptive names and adds Soil/Carbon.
+# The checked-in Kaggle file uses N/P/K, temperature, humidity, ph, rainfall, label.
+# Descriptive aliases also allow training on CSVs with expanded column names.
 ALIASES = {
     "n": "Nitrogen", "nitrogen": "Nitrogen",
     "p": "Phosphorous", "phosphorus": "Phosphorous", "phosphorous": "Phosphorous",
@@ -33,12 +33,10 @@ ALIASES = {
     "humidity": "Humidity", "relative_humidity": "Humidity",
     "ph": "PH", "soil_ph": "PH",
     "rainfall": "Rainfall", "rain": "Rainfall",
-    "carbon": "Carbon", "soil_carbon": "Carbon",
-    "soil": "Soil", "soil_type": "Soil",
     "label": "Crop", "crop": "Crop", "crop_name": "Crop",
 }
-FEATURE_ORDER = ["Nitrogen", "Phosphorous", "Potassium", "Temperature", "Humidity", "PH", "Rainfall", "Carbon", "Soil"]
-NUMERIC_FEATURES = set(FEATURE_ORDER) - {"Soil"}
+FEATURE_ORDER = ["Nitrogen", "Phosphorous", "Potassium", "Temperature", "Humidity", "PH", "Rainfall"]
+NUMERIC_FEATURES = set(FEATURE_ORDER)
 
 
 class CliError(Exception):

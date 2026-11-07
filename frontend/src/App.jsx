@@ -7,7 +7,6 @@ import {
   ArrowUpRight,
   Bookmark,
   Check,
-  ChevronDown,
   ChevronRight,
   CloudRain,
   Compass,
@@ -107,25 +106,8 @@ const FEATURES = [
     step: 0.1,
     color: "#b7c6a0",
   },
-  {
-    key: "Carbon",
-    label: "Carbon",
-    short: "C",
-    unit: "content",
-    min: 0,
-    max: 15,
-    step: 0.01,
-    color: "#9fcac9",
-  },
 ];
-const SOILS = [
-  "Loamy Soil",
-  "Neutral Soil",
-  "Acidic Soil",
-  "Peaty Soil",
-  "Alkaline Soil",
-];
-const PRESETS = ["rice", "wheat", "Cotton", "maize"];
+const PRESETS = ["rice", "wheat", "cotton", "maize"];
 const START = crops.find((crop) => crop.name === "rice").sample;
 const DEFAULT_LOCATION = {
   lat: 18.5204,
@@ -565,7 +547,6 @@ function App() {
   const [toast, setToast] = useState("");
   const [modal, setModal] = useState(null);
   const [cropQuery, setCropQuery] = useState("");
-  const [soilFilter, setSoilFilter] = useState("All soils");
   const [mobileNav, setMobileNav] = useState(false);
   const [modelStatus, setModelStatus] = useState("checking");
   const [inputSource, setInputSource] = useState("Rice dataset scenario");
@@ -655,7 +636,7 @@ function App() {
     setSearchResults([]);
     setQuery("");
     setSearchMessage("");
-    setToast("Field location updated. Soil values stay as entered.");
+    setToast("Field location updated. Measured inputs stay as entered.");
   };
   const useGPS = () => {
     if (!navigator.geolocation) {
@@ -743,7 +724,7 @@ function App() {
     const payload = Object.fromEntries(
       Object.entries(values).map(([key, value]) => [
         key,
-        key === "Soil" ? value : Number(value),
+        Number(value),
       ]),
     );
     const invalid = FEATURES.find(
@@ -834,7 +815,7 @@ function App() {
       inputs: report.inputs,
       inputSource: report.source,
       referenceDataset: {
-        records: 3100,
+        records: 2200,
         crops: crops.length,
         recommendedCropReference: profile,
       },
@@ -885,7 +866,7 @@ function App() {
                   2,
                 ),
               0,
-            ) + (crop.soils.includes(values.Soil) ? 0 : 0.15),
+            ),
         }))
         .sort((a, b) => a.distance - b.distance)
         .slice(0, 3),
@@ -893,15 +874,14 @@ function App() {
   );
   const filteredCrops = crops.filter(
     (crop) =>
-      crop.name.toLowerCase().includes(cropQuery.toLowerCase()) &&
-      (soilFilter === "All soils" || crop.soils.includes(soilFilter)),
+      crop.name.toLowerCase().includes(cropQuery.toLowerCase()),
   );
   const readyCount =
     FEATURES.filter(
       (feature) =>
         values[feature.key] !== "" &&
         Number.isFinite(Number(values[feature.key])),
-    ).length + (values.Soil ? 1 : 0);
+    ).length;
   const date = new Date().toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
@@ -1056,7 +1036,7 @@ function App() {
                 </div>
                 <div className="conditions-intro">
                   <span>
-                    <i className="status-dot" /> {readyCount}/9 inputs ready
+                    <i className="status-dot" /> {readyCount}/7 inputs ready
                   </span>
                   <button
                     className="text-button"
@@ -1088,23 +1068,6 @@ function App() {
                 <p className="input-hint">
                   Click a dial to fine-tune your measurements.
                 </p>
-                <div className="soil-select">
-                  <span>
-                    <Layers size={16} /> Soil composition
-                  </span>
-                  <div>
-                    <select
-                      aria-label="Soil composition"
-                      value={values.Soil}
-                      onChange={(event) => setValue("Soil", event.target.value)}
-                    >
-                      {SOILS.map((soil) => (
-                        <option key={soil}>{soil}</option>
-                      ))}
-                    </select>
-                    <ChevronDown size={14} />
-                  </div>
-                </div>
                 <div className="nutrient-heading">
                   <h3>Inside the soil</h3>
                   <span>NUTRIENT PROFILE</span>
@@ -1188,7 +1151,7 @@ function App() {
                   </h3>
                   <p>
                     {result
-                      ? `Recommended for your ${values.Soil.toLowerCase()} and measured field conditions.`
+                      ? "Recommended from your measured soil and climate conditions."
                       : "Every field has a story. Find the crop that belongs in yours."}
                   </p>
                 </div>
@@ -1235,13 +1198,13 @@ function App() {
                 <div className="intelligence-stats">
                   <div>
                     <strong>
-                      3,100<span> records</span>
+                      2,200<span> records</span>
                     </strong>
                     <small>TRAINING DATASET</small>
                   </div>
                   <div>
                     <strong>
-                      9<span> inputs</span>
+                      7<span> inputs</span>
                     </strong>
                     <small>YOUR FIELD, UNDERSTOOD</small>
                   </div>
@@ -1561,7 +1524,7 @@ function App() {
                     <p>
                       The trained model selected{" "}
                       <strong>{titleCase(result.crop)}</strong> from your eight
-                      numerical measurements and soil type.
+                      seven numerical measurements.
                     </p>
                     {recommendedProfile && (
                       <>
@@ -1636,7 +1599,7 @@ function App() {
                 <Sprout size={14} /> Agroterra · intelligence for a growing
                 world
               </span>
-              <span>31 crops. 9 field inputs. Better possibilities.</span>
+              <span>22 crops. 7 field inputs. Better possibilities.</span>
             </footer>
           </main>
         )}
@@ -1649,7 +1612,7 @@ function App() {
                   A world of <em>possibilities.</em>
                 </h1>
                 <p>
-                  Explore {crops.length} crop profiles, built from 3,100 real
+                  Explore {crops.length} crop profiles, built from 2,200 Kaggle
                   dataset records.
                 </p>
               </div>
@@ -1686,20 +1649,6 @@ function App() {
                   onChange={(event) => setCropQuery(event.target.value)}
                 />
               </label>
-              <label className="filter-select">
-                <Layers size={16} />
-                <select
-                  value={soilFilter}
-                  aria-label="Filter crops by soil"
-                  onChange={(event) => setSoilFilter(event.target.value)}
-                >
-                  <option>All soils</option>
-                  {SOILS.map((soil) => (
-                    <option key={soil}>{soil}</option>
-                  ))}
-                </select>
-                <ChevronDown size={15} />
-              </label>
               <span>{filteredCrops.length} results</span>
             </div>
             <div className="crop-library">
@@ -1715,7 +1664,7 @@ function App() {
                     <ArrowUpRight size={18} />
                   </div>
                   <div className="crop-card-content">
-                    <span className="eyebrow">{crop.soils.join(" · ")}</span>
+                    <span className="eyebrow">KAGGLE DATASET</span>
                     <h3>{titleCase(crop.name)}</h3>
                     <div>
                       <span>
@@ -1736,12 +1685,11 @@ function App() {
               <div className="empty-state">
                 <Search size={35} />
                 <h2>No crops found</h2>
-                <p>Try another crop name or soil filter.</p>
+                <p>Try another crop name.</p>
                 <button
                   className="secondary-button"
                   onClick={() => {
                     setCropQuery("");
-                    setSoilFilter("All soils");
                   }}
                 >
                   Clear filters
@@ -1811,7 +1759,7 @@ function App() {
                       <span>{display(report.inputs.Temperature)}°C</span>
                       <span>{display(report.inputs.Humidity)}% RH</span>
                       <span>pH {display(report.inputs.PH)}</span>
-                      <small>{report.inputs.Soil}</small>
+                      <small>7 input measurements</small>
                     </div>
                     <div className="report-actions">
                       <button
@@ -1922,7 +1870,7 @@ function App() {
               [
                 Sprout,
                 "Discover your crop",
-                "Run the trained model with all nine inputs. Explore dataset profiles, save your analysis, and export a report.",
+                "Run the trained model with seven inputs. Explore dataset profiles, save your analysis, and export a report.",
               ],
             ].map(([Icon, title, text], index) => (
               <div key={title}>
@@ -1949,9 +1897,8 @@ function App() {
               >
                 Open-Meteo
               </a>
-              . Soil and nutrient measurements need to be entered by you. Carbon
-              uses the dataset’s content scale. No model confidence, yield
-              prediction, or automatic soil sensing is claimed.
+              . Soil nutrient measurements need to be entered by you. No model
+              confidence, yield prediction, or automatic soil sensing is claimed.
             </p>
           </div>
           <button
@@ -1974,7 +1921,7 @@ function App() {
             <div>
               <span className="eyebrow">DATASET CROP PROFILE</span>
               <strong>{modal.count} reference records</strong>
-              <p>{modal.soils.join(" · ")}</p>
+              <p>Profiles summarize the Kaggle training records.</p>
             </div>
           </div>
           <p className="detail-intro">

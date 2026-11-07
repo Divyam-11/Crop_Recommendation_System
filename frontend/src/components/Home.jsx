@@ -14,8 +14,6 @@ function Home() {
         Nitrogen: "",
         Phosphorous: "",
         Potassium: "",
-        Carbon: "",
-        Soil: "Loamy Soil", // Default selected
     });
     const [prediction, setPrediction] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +43,6 @@ function Home() {
                 Nitrogen: parseFloat(formData.Nitrogen),
                 Phosphorous: parseFloat(formData.Phosphorous),
                 Potassium: parseFloat(formData.Potassium),
-                Carbon: parseFloat(formData.Carbon),
             };
 
             const res = await axios.post("http://localhost:5000/predict", payload);
@@ -195,36 +192,6 @@ function Home() {
                             />
                         </div>
 
-                        <div className="mb-4">
-                            <input
-                                type="number"
-                                step="any"
-                                name="Carbon"
-                                placeholder="Carbon"
-                                value={formData.Carbon}
-                                onChange={handleChange}
-                                required
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                data-translate="message"
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <select
-                                name="Soil"
-                                value={formData.Soil}
-                                onChange={handleChange}
-                                required
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                data-translate="message"
-                            >
-                                <option value="Acidic Soil">Acidic Soil</option>
-                                <option value="Peaty Soil">Peaty Soil</option>
-                                <option value="Neutral Soil">Neutral Soil</option>
-                                <option value="Loamy Soil">Loamy Soil</option>
-                                <option value="Alkaline Soil">Alkaline Soil</option>
-                            </select>
-                        </div>
                     </div>
 
                     <div className="text-center mt-4">
